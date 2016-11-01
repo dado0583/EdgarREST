@@ -27,7 +27,8 @@ class FilingsCollection(Resource):
     mongo = MongoDb().getDb('sec')['filings']
 
     @api.expect(pagination_arguments)
-    @api.marshal_with(filing)
+    #@api.marshal_with(filing)
+    @api.marshal_list_with(filing)
     def get(self):
         """
         Returns list of blog posts.
@@ -43,10 +44,12 @@ class FilingsCollection(Resource):
 
         records = self.mongo.find({}, {"RawText":0,"InteractiveDataTables":0}).skip(low).limit(per_page)
         
-        for record in records:
-            print(record)
+        json =  []
         
-        return records #"hello" #posts_page
+        for record in records:
+            json.append(record)
+        
+        return json #"hello" #posts_page
 
     @api.expect(filing)
     def post(self):
@@ -76,18 +79,7 @@ class FilingItem(Resource):
         if record is None:
             api.abort(code=404, message="No match found for _id: "+ id)
         
-        json_data= {
-            "company_name" : record["companyName"],
-            "id" : record["_id"],
-            "cik" : record["cik"],
-            "filing_number" : record["File/Film Number"],
-            "filing_type" : record["Filings"],
-            "filing_date" : record["Filing Date"],
-            "link_to_filing" : record["DocumentsLink"],
-            "link_to_interactive_data" : record["InteractiveData"]
-        }
-                
-        return json_data
+        return record
 
     @api.expect(filing)
     @api.response(204, 'Post successfully updated.')
