@@ -6,9 +6,10 @@ from flask import request
 from flask_restplus import Resource
 
 from api.blog.parsers import pagination_arguments
-from api.blog.serializers import filing  # , page_of_blog_posts
+from api.blog.serializers import search_results  # , page_of_blog_posts
 from api.restplus import api
 from database.MongoDb import MongoDb
+from database.MongoDb import Env
 
 
 #from database.models import Post
@@ -19,23 +20,23 @@ from database.MongoDb import MongoDb
 #from rest_api_demo.database.models import Post
 log = logging.getLogger(__name__)
 
-ns = api.namespace('filings', description='Operations related to filings')
+ns = api.namespace('search_results', description='Operations related to search results')
 
 
 @ns.route('/')
-class FilingsCollection(Resource):
-    mongo = MongoDb().getDb('sec')['filings']
+class SearchResultsCollection(Resource):
+    mongo = MongoDb(Env.dev).getDb('sec')['searchresults']
 
     @api.expect(pagination_arguments)
     #@api.marshal_with(filing)
-    @api.marshal_list_with(filing)
+    @api.marshal_list_with(search_results)
     def get(self):
         """
-        Returns list of SEC Filings.
+        Returns list of search results.
         """
         args = pagination_arguments.parse_args(request)
         page = args.get('page', 1)
-        per_page = args.get('per_page', 10)
+        per_page = args.get('per_page', 2)
 
         #posts_query = Post.query
         #posts_page = posts_query.paginate(page, per_page, error_out=False)
@@ -51,10 +52,10 @@ class FilingsCollection(Resource):
         
         return json #"hello" #posts_page
 
-    @api.expect(filing)
+    @api.expect(search_results)
     def post(self):
         """
-        Creates a new SEC filing.
+        Creates a new search result
         """
         #create_blog_post(request.json)
         return None, 201
@@ -63,12 +64,12 @@ class FilingsCollection(Resource):
 @ns.route('/<string:id>')
 @api.response(404, 'Post not found.')
 class FilingItem(Resource):
-    mongo = MongoDb().getDb('sec')['filings']
+    mongo = MongoDb(Env.dev).getDb('sec')['searchresults']
         
-    @api.marshal_with(filing)
+    @api.marshal_with(search_results)
     def get(self, id):
         """
-        Returns a summary about an SEC filing.
+        Returns a summary about a search result
         """
         id = urllib.request.unquote(id)
         ##TODO - Can we encode this on the swagger level?
@@ -81,11 +82,11 @@ class FilingItem(Resource):
         
         return record
 
-    @api.expect(filing)
+    @api.expect(search_results)
     @api.response(204, 'Post successfully updated.')
     def put(self, id):
         """
-        Updates an SEC filing.
+        Updates a search result.
         """
         data = request.json
         #update_post(id, data)
@@ -94,7 +95,7 @@ class FilingItem(Resource):
     @api.response(204, 'Post successfully deleted.')
     def delete(self, id):
         """
-        Deletes an SEC filing.
+        Deletes a search result.
         """
         #delete_post(id)
         return None, 204
