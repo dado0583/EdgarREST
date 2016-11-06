@@ -19,7 +19,7 @@ from database.MongoDb import MongoDb
 #from rest_api_demo.database.models import Post
 log = logging.getLogger(__name__)
 
-ns = api.namespace('filings', description='Operations related to blog posts')
+ns = api.namespace('filings', description='Operations related to filings')
 
 
 @ns.route('/')

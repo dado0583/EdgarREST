@@ -16,7 +16,8 @@ from flask import Flask, Blueprint
 
 
 import settings
-from api.blog.endpoints.filings import ns as blog_filings_namespace
+from api.blog.endpoints.filings import ns as filings_namespace
+from api.blog.endpoints.search_results import ns as search_results_namespace
 from api.restplus import api
 from database import db
 
@@ -48,7 +49,8 @@ def initialize_app(flask_app):
 
     blueprint = Blueprint('api', __name__, url_prefix='/api')
     api.init_app(blueprint)
-    api.add_namespace(blog_filings_namespace)
+    api.add_namespace(filings_namespace)
+    api.add_namespace(search_results_namespace)
     flask_app.register_blueprint(blueprint)
 
     db.init_app(flask_app)
