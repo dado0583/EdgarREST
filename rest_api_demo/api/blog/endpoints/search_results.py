@@ -25,7 +25,7 @@ ns = api.namespace('search_results', description='Operations related to search r
 
 @ns.route('/')
 class SearchResultsCollection(Resource):
-    mongo = MongoDb(Env.dev).getDb('sec')['searchresults']
+    mongo = MongoDb(Env.dev).getDb('edgar')['searchresults']
 
     @api.expect(pagination_arguments)
     #@api.marshal_with(filing)
@@ -64,7 +64,7 @@ class SearchResultsCollection(Resource):
 @ns.route('/<string:id>')
 @api.response(404, 'Post not found.')
 class FilingItem(Resource):
-    mongo = MongoDb(Env.dev).getDb('sec')['searchresults']
+    mongo = MongoDb(Env.dev).getDb('edgar')['searchresults']
         
     @api.marshal_with(search_results)
     def get(self, id):
